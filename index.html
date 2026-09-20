@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GRIDPOINT — Warehouse Location Optimizer</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand">
+      <span class="kicker">GRIDPOINT · HACK-A-MATICS 2026 · THEME: VECTOR</span>
+      <h1>Where should the warehouse go?</h1>
+      <p>Weighted-centroid optimization for an Estonian e-commerce network — turning order volume and geography into warehouse placement that keeps delivery fast and complaints down.</p>
+    </div>
+    <div class="score-badge">
+      <div>
+        <div class="num" id="satScore">—</div>
+        <div class="delta" id="satDelta"></div>
+      </div>
+      <div class="lbl">customer satisfaction index (weighted by daily orders)</div>
+    </div>
+  </header>
+
+  <div class="layout">
+
+    <div class="panel">
+      <h2><span class="swatch"></span>Network map</h2>
+      <div id="map"></div>
+      <div class="map-legend">
+        <span><span class="dot" style="background:var(--muted)"></span>Demand region (size = orders/day)</span>
+        <span><span class="dot" style="background:var(--coral)"></span>Naive warehouse (before)</span>
+        <span><span class="dot" style="background:var(--teal)"></span>Optimized warehouse (after)</span>
+        <span>→ vector = direction &amp; magnitude of the move</span>
+      </div>
+    </div>
+
+    <div class="panel controls">
+      <h2><span class="swatch"></span>Optimizer controls</h2>
+
+      <div class="field">
+        <label>Number of warehouses <b id="kVal">4</b></label>
+        <input type="range" id="kSlider" min="1" max="8" value="4">
+      </div>
+
+      <div class="field">
+        <label>Capacity per warehouse (orders/day)</label>
+        <input type="number" id="capInput" value="900" min="100" step="50">
+      </div>
+
+      <button class="btn" id="runBtn">Run optimization</button>
+      <button class="btn ghost" id="animBtn">▶ Play convergence (step by step)</button>
+
+      <div class="stat-row">
+        <div class="stat">
+          <div class="k">Weighted cost — before</div>
+          <div class="v small" id="costBefore">—</div>
+        </div>
+        <div class="stat">
+          <div class="k">Weighted cost — after</div>
+          <div class="v" id="costAfter">—</div>
+        </div>
+        <div class="stat">
+          <div class="k">Cost reduction</div>
+          <div class="v small" style="color:var(--green)" id="costDelta">—</div>
+        </div>
+        <div class="stat">
+          <div class="k">Avg. distance to warehouse</div>
+          <div class="v small" id="avgDist">—</div>
+        </div>
+      </div>
+
+      <div id="capacityAlert"></div>
+    </div>
+
+    <div class="panel full">
+      <h2><span class="swatch"></span>Before → after</h2>
+      <div class="compare-grid">
+        <div class="compare-col">
+          <div class="tag">BEFORE — naive placement (warehouse at the k biggest demand centers)</div>
+          <div class="row"><span>Total weighted cost</span><b id="cmpCostBefore">—</b></div>
+          <div class="row"><span>Avg. distance</span><b id="cmpDistBefore">—</b></div>
+          <div class="row"><span>Satisfaction index</span><b id="cmpSatBefore">—</b></div>
+        </div>
+        <div class="arrow-mid">→</div>
+        <div class="compare-col">
+          <div class="tag after">AFTER — weighted k-means optimized</div>
+          <div class="row"><span>Total weighted cost</span><b id="cmpCostAfter">—</b></div>
+          <div class="row"><span>Avg. distance</span><b id="cmpDistAfter">—</b></div>
+          <div class="row"><span>Satisfaction index</span><b id="cmpSatAfter">—</b></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel full">
+      <h2><span class="swatch"></span>Cost vs. number of warehouses</h2>
+      <div class="chart-wrap">
+        <svg id="tradeoffChart" width="620" height="260"></svg>
+        <div class="chart-note">
+          Each point re-runs the optimizer for that warehouse count and plots the resulting <b>total weighted delivery cost</b>. The marked point is the suggested elbow — past it, an extra warehouse buys little cost improvement for a lot of extra infrastructure.
+        </div>
+      </div>
+    </div>
+
+    <div class="panel full">
+      <h2><span class="swatch"></span>Region-level detail</h2>
+      <table class="regions" id="regionTable">
+        <thead>
+          <tr><th>Region</th><th>Orders/day</th><th>Assigned warehouse</th><th>Distance</th><th>Status</th></tr>
+        </thead>
+        <tbody id="regionBody"></tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <footer>GRIDPOINT — built for Hack-a-Matics · Pentagram × BMSCE IEEE Computer Society · Theme: VECTOR</footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
