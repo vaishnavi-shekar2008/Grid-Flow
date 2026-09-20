@@ -76,6 +76,25 @@
       </div>
 
       <div id="capacityAlert"></div>
+
+      <div class="stat-row impact-stats">
+        <div class="stat">
+          <div class="k">Carbon footprint / day</div>
+          <div class="v small" id="carbonDay">—</div>
+        </div>
+        <div class="stat">
+          <div class="k">CO₂ / order</div>
+          <div class="v small" id="carbonOrder">—</div>
+        </div>
+        <div class="stat">
+          <div class="k">Delivery price</div>
+          <div class="v small" id="dynamicPrice">—</div>
+        </div>
+        <div class="stat">
+          <div class="k">Crowd-house saving</div>
+          <div class="v small" id="crowdSaving">—</div>
+        </div>
+      </div>
     </div>
 
     <div class="panel full">
@@ -108,10 +127,56 @@
     </div>
 
     <div class="panel full">
+      <h2><span class="swatch"></span>Maths behind GRIDPOINT</h2>
+      <div class="math-grid">
+        <div class="math-card">
+          <div class="math-label">01 · Warehouse objective</div>
+          <div class="formula">C(W) = Σ dᵢ × D(rᵢ, W)</div>
+          <p>Demand-weighted distance keeps high-order regions closer to the warehouse. GRIDPOINT uses the Haversine distance and weighted Lloyd's iterations already present in the optimizer.</p>
+        </div>
+        <div class="math-card">
+          <div class="math-label">02 · Carbon model</div>
+          <div class="formula">CO₂ = Σ km × deliveries × EF</div>
+          <p>The demo estimates emissions from delivery distance and an adjustable vehicle emission factor. Lower network distance therefore reduces estimated CO₂.</p>
+        </div>
+        <div class="math-card">
+          <div class="math-label">03 · Dynamic pricing</div>
+          <div class="formula">P = P₀(1 + αD + βT − γG)</div>
+          <p>Distance and peak demand increase the simulated delivery price; grouped “crowd-house” deliveries reduce it by sharing the last-mile trip.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel full">
+      <h2><span class="swatch"></span>Carbon + crowd-house delivery</h2>
+      <div class="compare-grid">
+        <div class="compare-col">
+          <div class="tag">STANDARD LAST MILE</div>
+          <div class="row"><span>Estimated CO₂/day</span><b id="carbonStandard">—</b></div>
+          <div class="row"><span>Vehicle trips</span><b id="tripsStandard">—</b></div>
+          <div class="row"><span>Average price/order</span><b id="priceStandard">—</b></div>
+        </div>
+        <div class="arrow-mid">→</div>
+        <div class="compare-col">
+          <div class="tag after">CROWD-HOUSE CONSOLIDATED</div>
+          <div class="row"><span>Estimated CO₂/day</span><b id="carbonCrowd">—</b></div>
+          <div class="row"><span>Vehicle trips</span><b id="tripsCrowd">—</b></div>
+          <div class="row"><span>Average price/order</span><b id="priceCrowd">—</b></div>
+        </div>
+      </div>
+      <div class="control-strip">
+        <label for="peakInput">Peak-demand multiplier <b id="peakVal">1.00×</b></label>
+        <input type="range" id="peakInput" min="0.80" max="1.40" step="0.05" value="1.00">
+        <label for="groupInput">Crowd-house grouping <b id="groupVal">25%</b></label>
+        <input type="range" id="groupInput" min="0" max="0.50" step="0.05" value="0.25">
+      </div>
+    </div>
+
+    <div class="panel full">
       <h2><span class="swatch"></span>Region-level detail</h2>
       <table class="regions" id="regionTable">
         <thead>
-          <tr><th>Region</th><th>Orders/day</th><th>Assigned warehouse</th><th>Distance</th><th>Status</th></tr>
+          <tr><th>Region</th><th>Orders/day</th><th>Assigned warehouse</th><th>Distance</th><th>CO₂/day</th><th>Status</th></tr>
         </thead>
         <tbody id="regionBody"></tbody>
       </table>
